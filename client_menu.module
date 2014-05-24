@@ -1,0 +1,290 @@
+<?php
+
+/**
+ * Implements hook_help().
+ */
+function client_menu_help($path, $arg) {
+  if ($path == 'admin/help#client_menu') {
+    return '<p>' . t('This module prodive a custom client menu editing') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function client_menu_menu() {
+
+  $items = array();
+  
+  $items['admin/config/user-interface/client_menu'] = array(
+    'title' => 'Client menu',
+    'description' => 'A custom client menu editing',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('client_menu_admin_settings'),
+    'access arguments' => array('administer client menu'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'client_menu.admin.inc',
+  );
+  
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function client_menu_permission() {
+  return array(
+    'administer client menu' => array(
+      'title' => t('Administer client menu'),
+      'description' => t('Manage permission for client menu module'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_enable().
+ */
+function client_menu_enable() {
+
+  variable_set('client_menu_roles', array());
+  variable_set('client_menu_cts', array());
+  variable_set('client_menu_taxos', array());
+  variable_set('client_menu_menus', array());
+  variable_set('client_menu_users', array());
+
+  $menu1 = array(
+    'menu_name' => 'client-menu-menu1',
+    'title' => t('First client menu'),
+    'description' => t('First client menu to display'),
+  );
+
+  menu_save($menu1);
+
+  $menu2 = array(
+    'menu_name' => 'client-menu-menu2',
+    'title' => t('Second client menu'),
+    'description' => t('Second client menu to display'),
+  );
+
+  menu_save($menu2);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function client_menu_disable() {
+
+  variable_del('client_menu_roles');
+  variable_del('client_menu_cts');
+  variable_del('client_menu_taxos');
+  variable_del('client_menu_menus');
+  variable_del('client_menu_users');
+
+  $menu1 = array(
+    'menu_name' => 'client-menu-menu1',
+    'title' => t('First client menu'),
+    'description' => t('First client menu to display'),
+  );
+
+  menu_delete($menu1);
+
+  $menu2 = array(
+    'menu_name' => 'client-menu-menu2',
+    'title' => t('Second client menu'),
+    'description' => t('Second client menu to display'),
+  );
+
+  menu_delete($menu2);
+}
+
+function get_list_ct() {
+  $content = array();
+
+  foreach (node_type_get_types() as $key => $value) {
+    $content[] = $value->type;
+  }
+
+  return $content;
+}
+
+function get_client_menu_cts(){
+  $content = '';
+
+  $client_menu_cts = variable_get('client_menu_cts');
+
+  if(!empty($client_menu_cts)) {
+    $content = '<li class="niv1">
+      <span class="niv1">'.t('Add content').'</span>
+        <ul>';
+    $list_node_types = node_type_get_types();
+
+    foreach ($client_menu_cts as $key => $value) {
+      
+      if(!empty($value) || $value != 0) {
+
+        $url = 'node/add/'.str_replace('_', '-', $value);
+        
+        if(drupal_valid_path($url)) {
+          $content .= '<li>'.l(t($list_node_types[$value]->name), $url, array('absolute' => TRUE)).'</li>';
+        }
+      }
+    }
+    $content .= '</ul></li>';
+  }
+
+  return $content;
+}
+
+
+function get_client_menu_menus () {
+  $content = '';
+
+  $client_menu_menus = variable_get('client_menu_menus');
+
+  if(!empty($client_menu_menus)) {
+    $infos = '';
+    foreach ($client_menu_menus as $key => $value) {
+      if(!empty($value) || $value != 0) {
+        $url = 'admin/structure/menu/manage/'.$value;
+        if(drupal_valid_path($url)) {
+          $menu_item = menu_load($value);
+          $infos .= '<li>'.l(t($menu_item['title']), $url, array('absolute' => TRUE)).'</li>';
+        }
+      }
+    }
+    if(!empty($infos)) {
+      $content = '
+        <li class="niv1">
+          <span class="niv1">'.t('List menu').'</span>
+          <ul>'.$infos.'</ul>
+        </li>'; 
+    }
+  }
+  return $content;
+}
+
+function get_client_menu_taxos () {
+  $content = '';
+
+  $client_menu_taxos = variable_get('client_menu_taxos');
+
+  if(!empty($client_menu_taxos)) {
+    $infos = '';
+    foreach ($client_menu_taxos as $key => $value) {
+      if(!empty($value) || $value != 0) {
+
+        $url = 'admin/structure/taxonomy/'.$value;
+
+        if(drupal_valid_path($url)) {
+          $infos .= '<li>'.l(t(taxonomy_vocabulary_machine_name_load($value)->name), $url, array('absolute' => TRUE)).'</li>';
+        }
+      }
+    }
+    if(!empty($infos)) {
+      $content = '<li class="niv1">
+      <span class="niv1">'.t('Edit taxonomies').'</span>
+        <ul>'.$infos.'</ul></li>';
+    }
+  }
+
+  return $content;
+}
+
+function get_client_menu_menu1() {
+  $content = '';
+
+
+  $menu1 = menu_block_view('client-menu-menu1');
+  if(!empty($menu1['content'])) {
+    $block_menu1 = module_invoke('menu', 'block_view', 'client-menu-menu1');
+    $menu1 = render($block_menu1['content']);
+    if(!empty($menu1)) {
+      $content = '<li class="niv1"><span class="niv1">'.t('Client menu1 title').'</span>' . $menu1 . '</li>';
+    }
+  }
+  
+  return $content;
+}
+
+function get_client_menu_menu2() {
+  $content = '';
+
+  $menu2 = menu_block_view('client-menu-menu2');
+  if(!empty($menu2['content'])) {
+    $block_menu2 = module_invoke('menu', 'block_view', 'client-menu-menu2');
+    $menu2 = render($block_menu2['content']);
+    if(!empty($menu2)) {
+      $content = '<li class="niv1"><span class="niv1">'.t('More links').'</span>' . $menu2 . '</li>';
+    }
+  }
+
+  return $content;
+}
+
+function get_client_menu() {
+  global $user;
+
+  $content = '';
+  $user_roles = $user->roles;
+  $client_menu_roles = variable_get('client_menu_roles');
+  $acces_menu = 'no';
+  foreach ($user_roles as $key => $user_role) {
+    if(!empty($client_menu_roles[$user_role])) { $acces_menu = 'yes'; }
+  }
+  if($acces_menu == "yes") {
+    $url = 'admin/config/user-interface/client_menu';
+
+    if(drupal_valid_path($url)) {
+      $btn_home = '<li class="client-menu-home">' . l('', $url, array('absolute' => TRUE)) . '</li>';
+    }
+    else {
+      $btn_home = '<li class="client-menu-home">' . l('', '<front>', array('absolute' => TRUE)) . '</li>';
+    }
+  
+    if (in_array('contributeur programme', $user->roles)) {
+      $link_account = '';
+    }
+    else {
+      $link_account = '<li class="niv1">'.l(t('My account'), 'user').'</li>';
+    }
+    $content = '
+      <div id="client-menu">
+        <div class="content">
+          <ul class="main clearfix">'.
+            $btn_home.
+            get_client_menu_cts().
+            get_client_menu_menu1().
+            get_client_menu_taxos().
+            get_client_menu_menus().
+            get_client_menu_menu2().
+            $link_account.
+            '<li class="niv1">'.l(t('Log out'), 'user/logout').'</li>'.
+          '</ul>
+        </div>
+      </div>';
+    
+    drupal_add_css(drupal_get_path('module', 'client_menu') . '/assets/css/client-menu.css', array('media' => 'all', 'group' => CSS_DEFAULT, 'every_page' => TRUE, 'weight' => 0));
+    drupal_add_js('jQuery(document).ready(function () {
+      (function($) {
+        $("#client-menu li").mouseenter(function(){
+          $(this).addClass("on");
+          $(this).children("ul").fadeIn(400);
+        }).mouseleave(function(){
+          $(this).removeClass("on");
+          $(this).children("ul").fadeOut(400);
+        });
+      })(jQuery);
+    });', array('type' => 'inline', 'weight' => 0));
+  }
+
+  return $content;
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function client_menu_page_build(&$page){
+  if(user_is_logged_in()) {
+    $page['page_top']['client_menu'] = array('#markup' => get_client_menu());
+  }
+}

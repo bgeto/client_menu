@@ -1,0 +1,106 @@
+body {
+	margin-top: 30px !important;
+}
+body #toolbar, 
+body #admin-menu {
+	top: 30px !important;
+}
+html body.logged-in.admin-menu {
+	margin-top: 51px !important;
+}
+#client-menu-admin-settings a.client-menu-link {
+	display: block;
+	text-transform: uppercase;
+}
+#client-menu {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	background: #000;
+	color: #fff;
+	font-family: arial, georgia, verdana;
+	font-size: 0.813em;
+	width: 100%;
+}
+#client-menu .content {
+	width: 98%;
+	margin: 0 auto;
+}
+#client-menu .client-menu-home a {
+	background: url('../images/client-menu-home.png') no-repeat;
+	display: block;
+	width: 20px;
+	height: 20px;
+}
+#client-menu a {
+	color: #fff;
+	text-decoration: none;
+}
+#client-menu a:hover,
+#client-menu span.niv1:hover {
+	color: #ccc;
+}
+#client-menu ul.main {
+	margin: 0;
+	padding: 0;
+}
+#client-menu ul.main li.client-menu-home {
+	float: left;
+	list-style: none outside none;
+	position: relative;
+	padding: 5px 0;
+	text-align: center;
+}
+#client-menu ul.main li.niv1 {
+	float: left;
+	list-style: none outside none;
+	position: relative;
+	width: 13.5%;
+	padding: 5px 0;
+	text-align: center;
+}
+#client-menu ul.main li.niv1 span {
+	cursor: pointer;
+	display: block;
+}
+#client-menu ul.main li.niv1 ul {
+	margin: 0;
+	padding: 0;
+	display:none;
+	position: absolute;
+	left: 0;
+	top: 100%;
+	width: 100%;
+	background: #000;
+}
+#client-menu ul.main li.niv1 ul li {
+	list-style: none outside none;
+	position: relative;
+}
+#client-menu ul.main li.niv1 ul li a {
+	padding: 5px 0;
+	text-align: center;
+	display: block;
+	border-top: 1px dotted #ccc;
+}
+#client-menu ul.main li.niv1 ul li ul {
+	position: absolute;
+	top: 0;
+	left: 100%;
+	border-left: 1px solid #ccc;
+}
+#client-menu ul.main li.niv1 ul li ul li {
+	padding: 0;
+	margin: 0;
+}
+#client-menu ul.main li.expanded a {
+	background: url("../images/client_menu-arrow.png") center right no-repeat;
+}
+#client-menu ul.main li.expanded a li a {
+	background: none;
+}
+
+#user-admin-permissions .sticky-header {
+	top: 50px !important;
+}
